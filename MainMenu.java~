@@ -1,0 +1,111 @@
+
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.*;
+import java.io.*;
+
+
+/**
+ * This is the MainMenu panel where the user chooses from a list of options.
+ * @author Eric Tu and Sejin Kwon
+ * @version 3
+ * @since June 1 2012
+ */
+public class MainMenu extends JPanel{
+  
+  /**
+   * This is an array of JButtons for the selections.
+   */
+  JButton menuChoices [] = {new JButton(new ImageIcon("Start1.png")), new JButton(new ImageIcon("hs1.png")), new JButton(new ImageIcon("Quit1.png")), new JButton(new ImageIcon("Instruction1.png"))};
+  /**
+   * This is an array of Strings for the choices.
+   */
+  String menuCStrings [] = {"Start","High Score","Quit","Instructions"};
+  /**
+   * The class constructor.
+   * 
+   * The loop does through all the buttons in the levelChoices array and adds them to the panel
+   * and adds a listener to them.It also sets the actionCommand of the buttons and sets their attributes.
+   * The buttons are made so that when you have a mouse over it, or if you click it, it changes the image.
+   * The panel is then updated.
+   */
+  public MainMenu(){
+    setPreferredSize(new Dimension (840,600));
+    for(int i = 0 ; i < menuChoices.length ; i++){
+      add(menuChoices[i]);
+      menuChoices[i].addActionListener(new MenuListener());
+      menuChoices [i].setActionCommand(menuCStrings[i]);
+      menuChoices[i].setOpaque(false);
+      menuChoices[i].setContentAreaFilled(false);
+      menuChoices[i].setBorderPainted(false);
+      menuChoices[i].setFocusable(false);
+      menuChoices[i].setBounds(250,i*75 + 250,100,75);
+    }
+    JLabel logo = new JLabel (new ImageIcon ("Logo.png"));
+    logo.setBounds (100, 20, logo.getPreferredSize ().width, logo.getPreferredSize ().height);
+    add (logo);
+    setLayout (null);
+    setFocusable (true);
+    ImageIcon hsrollover = new ImageIcon("hs2.png");   
+    menuChoices[1].setRolloverIcon(hsrollover);
+    ImageIcon hspress = new ImageIcon("hs3.png");
+    menuChoices[1].setPressedIcon(hspress);
+    menuChoices [1].setMnemonic (KeyEvent.VK_F2);
+    
+    ImageIcon srollover = new ImageIcon("Start2.png");   
+    menuChoices[0].setRolloverIcon(srollover);
+    ImageIcon spress = new ImageIcon("Start3.png");
+    menuChoices[0].setPressedIcon(spress);
+    menuChoices [0].setMnemonic (KeyEvent.VK_F1);
+    
+    ImageIcon qrollover = new ImageIcon("Quit2.png");   
+    menuChoices[2].setRolloverIcon(qrollover);
+    ImageIcon qpress = new ImageIcon("Quit3.png");
+    menuChoices[2].setPressedIcon(qpress);
+    menuChoices [2].setMnemonic (KeyEvent.VK_F3);
+    
+    ImageIcon irollover = new ImageIcon("Instruction2.png");   
+    menuChoices[3].setRolloverIcon(irollover);
+    ImageIcon ipress = new ImageIcon("Instruction3.png");
+    menuChoices[3].setPressedIcon(ipress);
+    menuChoices [3].setMnemonic (KeyEvent.VK_F4);
+    
+    JLabel shortc = new JLabel (new ImageIcon ("menushortcuts.png"));
+    shortc.setBounds (355, 380, shortc.getPreferredSize ().width, shortc.getPreferredSize ().height);
+    add (shortc);
+    updateUI();
+    
+  }
+  /**
+   * This is the inner class that implements ActionListener.
+   */
+  class MenuListener implements ActionListener{
+    /**
+     * This triggers when a button is pressed.
+     * 
+     * If the user clicks Start, the LEVELSELECT card will appear.
+     * If the user clicks Quit, the QUIT card will appear and the start method is called.
+     * 
+     * @param event This is the event triggered.
+     */
+    public void actionPerformed(ActionEvent event){
+      if(event.getActionCommand().equals("Start"))
+        FrameApp.cardLayout.show(FrameApp.mainPanel, FrameApp.LEVELSELECT);
+      else if(event.getActionCommand().equals("Quit")){
+        FrameApp.cardLayout.show(FrameApp.mainPanel, FrameApp.GOODBYE);
+        FrameApp.gb.start();}
+      else if (event.getActionCommand ().equals ("Instructions"))
+      {
+        FrameApp.cardLayout.show (FrameApp.mainPanel, FrameApp.INSTRUCTIONS1);
+      }
+      else
+      {
+        if (event.getActionCommand ().equals ("High Score"))
+        {
+          FrameApp.cardLayout.show (FrameApp.mainPanel, FrameApp.HIGHSCORELS);
+          HighScore.readScore ();
+        }
+      }
+    }
+  }
+}

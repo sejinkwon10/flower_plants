@@ -1,0 +1,258 @@
+import javax.swing.*;
+import java.awt.event.*;
+/**
+ * <PRE> Helps store information about, control and draw the user controlled character.
+ * Variable Dictionary:
+ * numFlowers     private int                 the number of Flowers collected by the Player
+ * score          private int                 score of the Player
+ * level          private int                 the level in the game that the Player is at
+ * name           private String              the name of the Player
+ * image          private String              the name of the ImageIcon that represents the Player
+ * play0          private final String        the name of the Player when its direction is 0.
+ * play1          private final String        the name of the Player when its direction is 1. 
+ * play2          private final String        the name of the Player when its direction is 2. 
+ * play3          private final String        the name of the Player when its direction is 3. 
+ * @author Eric Tu and Sejin Kwon
+ * @version 6
+ * @since June 13, 2012
+ * </PRE>
+ */
+public class Player extends Moveable implements ActionListener 
+{
+  private String play0, play1, play2, play3;
+  static int  score,  lives;
+  private Timer trapT; 
+  private static String name;
+  private boolean grace, trapped, paused; 
+  
+  public void actionPerformed (ActionEvent e)
+  {
+    if (trapped && !grace)
+    {
+      trapped = false;
+      grace = true; 
+    }
+    else
+    {
+      if (grace)
+      {
+        trapT.stop ();
+        grace = false;
+      }
+    }
+  }
+  
+  public boolean canMove (int a, int b)
+  {
+    if (trapped || paused)
+    {
+      return false;
+    }
+    for (int x = 0; x < 117; x+=10)
+    {
+      for (int y = 0; y < 117; y+=10)
+      {
+        if (FrameApp.g.getComponentAt (a + x, b + y) instanceof RedTrap && !grace || FrameApp.g.getComponentAt (a + x, b + y) instanceof Trap && !grace)
+        {
+          if (FrameApp.g.getComponentAt (a + x, b + y) instanceof RedTrap && !grace)
+          {
+            if (score >= 50)
+              setScore (-50);
+            decrLives ();
+          }
+          else
+          {
+            if (FrameApp.g.getComponentAt (a + x, b + y) instanceof Trap && !grace && score >=25)
+            {
+              setScore (-25);
+            }
+          }
+          trapped = true;
+          trapT.start ();
+          return false;
+        }
+        else
+        {
+          if (FrameApp.g.getComponentAt (a + x, b + y) instanceof Trap && grace)
+          {
+            return false; 
+          }
+        }
+      }
+    }
+    return true;
+  }
+  
+  /**
+   * Sets the ImageIcon that represents the Player to the 
+   * picture file with the name: path. 
+   * @param path     String     the name of the picture that will be the ImageIcon of the Player. 
+   */
+  private void setImage (String path)
+  {
+    setIcon (new ImageIcon (path));
+    setBounds (getXPos (), getYPos (), getPreferredSize ().width, getPreferredSize ().height);
+    updateUI ();
+  }
+  
+  private void setColor (int col)
+  {
+    if (col == 0)
+    {
+      play0 = "BluePlayer0.png";
+      play1 = "BluePlayer1.png";
+      play2 = "BluePlayer2.png";
+      play3 = "BluePlayer3.png";
+    }
+    else if (col == 1)
+    {
+      play0 = "GreenPlayer0.png";
+      play1 = "GreenPlayer1.png";
+      play2 = "GreenPlayer2.png";
+      play3 = "GreenPlayer3.png";
+    }
+    else if (col == 2)
+    {
+      play0 = "RedPlayer0.png";
+      play1 = "RedPlayer1.png";
+      play2 = "RedPlayer2.png";
+      play3 = "RedPlayer3.png";
+    }
+    else
+    {
+      play0 = "YellowPlayer0.png";
+      play1 = "YellowPlayer1.png";
+      play2 = "YellowPlayer2.png";
+      play3 = "YellowPlayer3.png";
+    }
+    setIcon (new ImageIcon (play0));
+    setBounds (getXPos (), getYPos (), getPreferredSize ().width, getPreferredSize ().height);
+  }
+  /**
+   * <PRE> Constructs a player object that is at position x on the x axis, y on the y axis, has the colour col,
+   * is facing direction dir and is called user.
+   * @param x     int     initial x axis position
+   * @param y     int     initial y axis position
+   * @param col   int     colour of the Moveable
+   * @param dir   int     initial direction 
+   * @param user  String  name of the Player </PRE>
+   */
+  public Player (int x, int y, int col , int dir, int lives, String user)
+  {
+    super (x,y,col, dir);
+    setColor (col);
+    score = 0;
+    name = user;
+    grace = false;
+    trapped = false; 
+    trapT = new Timer (3000, this);
+    paused = false;
+    this.lives = lives;
+  }
+  public static void decrLives ()
+  {
+    lives -= 1;
+    FrameApp.s.lives.setText (Integer.toString (lives));
+    if (lives == 0)
+    {
+      FrameApp.g.pauseGame ();
+      FrameApp.frame.remove (FrameApp.s);
+      FrameApp.cardLayout.show(FrameApp.mainPanel, FrameApp.HIGHSCORE);
+      HighScore.readScore();
+      HighScore.insertScore(new Score(name, score));
+      HighScore.readScore();
+      FrameApp.frame.repaint();
+    }
+  }
+  /**
+   * Returns the name of the Player.
+   * @return name of the Player.
+   */
+  public static String typeName ()
+  {
+    return name;
+  }
+  
+  public void setPaused ()
+  {
+    paused = !paused;
+  }
+  
+  /**
+   * Sets the Player's score to their score plus the integer parameter "points". 
+   */
+  public static void setScore (int points)
+  {
+    score+= points;
+    ScorePanel.score.setText(Integer.toString(score));
+    if (score >= Game.level * 500)
+    {
+      FrameApp.g.incrLevel ();
+    }
+  }
+  
+  
+  /**
+   * Changes the direction of the Player to the int parameter int dir. 
+   * Uses setImage (path) to change the ImageIcon of the Player depending
+   * on what the new direction of the Player is after it turns. 
+   */
+  public void turn (int dir)
+  {
+    if (dir == 1)
+    {
+      if (getDirection () == 0)
+      {
+        setImage (play3);
+        setDirection (3);
+      }
+      else if (getDirection () == 1)
+      {
+        setImage (play0);
+        setDirection (0);
+      }
+      else if (getDirection () == 2)
+      {
+        setImage (play1);
+        setDirection (1);
+      }
+      else
+      {
+        if (getDirection () == 3)
+        {
+          setImage (play2);
+          setDirection (2);
+        }
+      }
+    }
+    else 
+    {
+      if (dir == 2)
+      {
+        if (getDirection () == 0)
+        {
+          setImage (play1);
+          setDirection (1);
+        }
+        else if (getDirection () == 1)
+        {
+          setImage (play2);
+          setDirection (2);
+        }
+        else if (getDirection () == 2)
+        {
+          setImage (play3);
+          setDirection (3);
+        }
+        else
+        {
+          if (getDirection () == 3)
+          {
+            setImage (play0);
+            setDirection (0);
+          }
+        }
+      }
+    }
+  }
+}

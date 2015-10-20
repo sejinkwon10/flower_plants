@@ -1,0 +1,36 @@
+
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.*;
+
+/**
+ * The is the GoodBye panel that is the outro screen.
+ * 
+ * @author Eric Tu and Sejin Kwon
+ * @version 3
+ * @since June 1 2012
+ */
+public class Instructions extends JPanel implements ActionListener {
+  
+  
+  /**
+   * The class constructor.
+   * 
+   * Adds and creates a message saying bye.
+   */
+  public Instructions(){
+    setLayout (null);
+    setPreferredSize(new Dimension (840,600));
+    JButton back = new JButton ("Back");
+    back.addActionListener (this);
+    JLabel pic = new JLabel(new ImageIcon ("Instructions.png"));
+    pic.setBounds (0, 0, pic.getPreferredSize ().width, pic.getPreferredSize ().height);
+    back.setBounds (700, 30, back.getPreferredSize ().width, back.getPreferredSize ().height);
+    add (pic);
+    add (back);
+  }
+  public void actionPerformed (ActionEvent e)
+  {
+    FrameApp.cardLayout.show (FrameApp.mainPanel, FrameApp.MAINMENU);
+  }
+}

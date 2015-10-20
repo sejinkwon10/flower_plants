@@ -1,0 +1,22 @@
+/**
+ * <PRE> A type of Rock in Rainbow Plants that both blocks the Player from moving,
+ * and causes them to lose points.
+ * @author Sejin Kwon and Eric Tu
+ * @version 1.0
+ * @since May 16, 2012 </PRE>
+ */
+public class SpikyRock extends Rock
+{
+  public SpikyRock (int x, int y, String col)
+  {
+    super (x, y, col);
+  }
+  /**
+   * Detects if the SpikyRock has been hit by the Player or not.
+   * @return whether or not the Rock has been hit the Player
+   */
+  public boolean collDetect ()
+  {
+   return true; 
+  }
+}
